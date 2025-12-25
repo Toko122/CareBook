@@ -21,7 +21,7 @@ export async function POST(req: Request) {
        const isMatch = await bcrypt.compare(password, user.password)
        if(!isMatch) return NextResponse.json({message: 'invalid password'}, {status: 409})
 
-       const token = jwt.sign({id: user._id}, process.env.JWT, {expiresIn: '2d'})
+       const token = jwt.sign({id: user._id}, process.env.JWT!, {expiresIn: '2d'})
 
        return NextResponse.json({message: 'user logged in', token, user}, {status: 200})
 
