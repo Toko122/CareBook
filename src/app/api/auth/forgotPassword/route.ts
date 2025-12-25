@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         })
 
         const resetToken = crypto.randomBytes(32).toString('hex')
-        const resetTokenUrl = `http://localhost:3000/features/auth/reset-password/${resetToken}`
+        const resetTokenUrl = `https://care-book-92s3-ibxl9zyr0-toko122s-projects.vercel.app/features/auth/reset-password/${resetToken}`
         const resetTokenExpire = Date.now() + 1000 * 60 * 15
 
         user.resetToken = resetToken,
