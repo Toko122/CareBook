@@ -1,0 +1,42 @@
+.heroHeader{
+    opacity: 0;
+    animation: heroHeader 1.5s ease forwards;
+}
+
+.heroSub{
+    opacity: 0;
+    animation: heroSub 2s ease forwards;
+}
+
+.heroButtons{
+    opacity: 0;
+    animation: heroButtons 3s ease forwards;
+}
+
+@keyframes heroHeader{
+    from{
+        opacity: 0;
+        transform: translateX(130px);
+    }to{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes heroSub{
+    from{
+        opacity: 0;
+        transform: translateY(30px);
+    }to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroButtons{
+    from{
+        opacity: 0;
+    }to{
+        opacity: 1;
+    }
+}

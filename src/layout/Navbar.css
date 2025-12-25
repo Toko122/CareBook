@@ -1,0 +1,13 @@
+.sidebar{
+    animation: sidebar 0.5s ease-in-out;
+}
+
+@keyframes sidebar{
+     from{
+        opacity: 0;
+        width: 0;
+     }to{
+        opacity: 1;
+        width: 250px;
+     }
+}
