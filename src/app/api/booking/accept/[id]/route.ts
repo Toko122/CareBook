@@ -1,8 +1,8 @@
 import connectDb from "@/lib/connectDb";
 import Booking from "@/models/booking";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await connectDb()
      const { id } = await context.params

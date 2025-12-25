@@ -1,13 +1,13 @@
 import connectDb from "@/lib/connectDb";
 import User from "@/models/user";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import bcrypt from 'bcryptjs'
 
 interface PasswordForm {
     password: string
 }
 
-export async function POST(req: NextRequest, context: {params: Promise<{id: string}>}) {
+export async function POST(req: Request, context: {params: Promise<{id: string}>}) {
      try{
         await connectDb()
         const body: PasswordForm = await req.json()
