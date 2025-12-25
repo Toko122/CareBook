@@ -1,13 +1,12 @@
 import connectDb from "@/lib/connectDb";
 import Booking from "@/models/booking";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(req: Request, context: {params: Promise<{id: string}>}) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     await connectDb()
-     const {id: paramsId} = await context.params
-     const body = await req.json().catch(() => {})
-     const id = paramsId || body.id
+     const { id } = await context.params
+
     if (!id) {
       return NextResponse.json({ message: "Booking ID is required" }, { status: 400 })
     }
