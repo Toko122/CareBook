@@ -10,7 +10,7 @@ export async function GET(req: Request) {
         await connectDb()
         const authResult = await authMiddleware(req)
         if (authResult instanceof NextResponse) return authResult
-        const userId= req.headers.get('userId')
+        const userId= authResult.id
 
         if (!userId) {
          return NextResponse.json(

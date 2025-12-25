@@ -20,7 +20,7 @@ export async function POST(req: Request) {
          const authResult = await authMiddleware(req)
          if (authResult instanceof NextResponse) return authResult
 
-         const userId = req.headers.get('userId')
+         const userId = authResult.id
 
          await connectDb()
          const body: BookingForm = await req.json()
