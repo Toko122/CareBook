@@ -3,16 +3,34 @@ import Contact from '@/models/contact'
 import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
-export async function POST(req: Request) {
+interface ContactForm {
+  name: string
+  email: string
+  phone?: string
+  message: string
+}
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS(): Promise<NextResponse> {
+  return NextResponse.json({}, { status: 204, headers: corsHeaders })
+}
+
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectDb()
 
-    const { name, email, phone, message } = await req.json()
+    const body: ContactForm = await req.json()
+    const { name, email, phone, message } = body
 
     if (!name || !email || !message) {
       return NextResponse.json(
         { message: 'Missing required fields' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -26,8 +44,8 @@ export async function POST(req: Request) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASS,
+        user: process.env.EMAIL!,
+        pass: process.env.PASS!,
       },
     })
 
@@ -47,12 +65,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: 'Message sent successfully', contact },
-      { status: 201 }
+      { status: 201, headers: corsHeaders }
     )
   } catch (err: any) {
     return NextResponse.json(
       { message: 'Error sending message', error: err.message },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
