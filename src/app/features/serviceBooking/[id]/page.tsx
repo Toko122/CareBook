@@ -65,7 +65,7 @@ const ServiceBooking = () => {
          return;
        }
 
-      await axios.post('/booking/createBooking', form, {
+      await axios.post('/booking/createBooking', form {
         headers: {
           Authorization: `Bearer ${token}`
         }

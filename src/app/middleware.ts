@@ -54,11 +54,5 @@ export const config = {
   matcher: [
     "/api/booking/:path*",
     "/api/users/:path*",
-
-    "/api/booking/createBooking",
-    "/api/booking/getBooking",
-    "/api/booking/getBooking/:path*",
-    "/api/booking/accept/:path*",
-    "/api/booking/cancel/:path*",
   ],
 };
