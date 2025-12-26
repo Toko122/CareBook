@@ -1,4 +1,3 @@
-import { authMiddleware } from "@/lib/authMiddleware";
 import connectDb from "@/lib/connectDb";
 import Booking from "@/models/booking";
 import mongoose from "mongoose";
@@ -17,10 +16,10 @@ interface BookingForm {
 export async function POST(req: Request) {
      try{
 
-         const authResult = await authMiddleware(req)
-         if (authResult instanceof NextResponse) return authResult
-
-         const userId = authResult.id
+         const userId = req.headers.get("userId");
+        if (!userId) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
 
          await connectDb()
          const body: BookingForm = await req.json()
