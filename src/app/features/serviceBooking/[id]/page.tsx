@@ -71,9 +71,9 @@ const ServiceBooking = () => {
 
       if (err.response?.status === 409) {
         setAlert({ type: 'error', message: 'This time slot is already booked. Please choose another time.' })
-      } else {
-        router.push('/features/auth/login')
-      }
+      } else if (err.response?.status === 401) {
+         router.push("/features/auth/login");
+    }
 
     } finally {
 
