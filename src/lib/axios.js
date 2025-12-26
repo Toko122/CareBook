@@ -11,7 +11,10 @@ instance.interceptors.request.use((config) => {
       !config.url?.includes("/auth/login") &&
       !config.url?.includes("/auth/register")
     ) {
-      config.headers.Authorization = `Bearer ${token}`;
+
+      if (!config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
   
 

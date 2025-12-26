@@ -59,6 +59,12 @@ const ServiceBooking = () => {
     setLoading(true)
     try {
        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+       
+       if (!token) {
+         router.push("/features/auth/login");
+         return;
+       }
+
       await axios.post('/booking/createBooking', form, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -72,7 +78,12 @@ const ServiceBooking = () => {
       if (err.response?.status === 409) {
         setAlert({ type: 'error', message: 'This time slot is already booked. Please choose another time.' })
       } else if (err.response?.status === 401) {
-         router.push("/features/auth/login");
+         setAlert({ type: 'error', message: 'Session expired. Please login again.' })
+         setTimeout(() => {
+           router.push("/features/auth/login");
+         }, 2000)
+    } else {
+      setAlert({ type: 'error', message: err.response?.data?.message || 'Something went wrong. Please try again.' })
     }
 
     } finally {

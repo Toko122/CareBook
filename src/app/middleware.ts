@@ -15,16 +15,23 @@ export function middleware(req: NextRequest) {
     return NextResponse.json({}, { headers: corsHeaders });
   }
 
-  const authHeader = req.headers.get("authorization");
+  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(
-      { message: "Unauthorized" },
+      { message: "Unauthorized - No token provided" },
       { status: 401, headers: corsHeaders }
     );
   }
 
   const token = authHeader.split(" ")[1];
+
+  if (!token || token === "null" || token === "undefined") {
+    return NextResponse.json(
+      { message: "Unauthorized - Invalid token format" },
+      { status: 401, headers: corsHeaders }
+    );
+  }
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
@@ -35,9 +42,9 @@ export function middleware(req: NextRequest) {
         headers: requestHeaders,
       },
     });
-  } catch {
+  } catch (error) {
     return NextResponse.json(
-      { message: "Invalid token" },
+      { message: "Invalid token - Token expired or invalid" },
       { status: 401, headers: corsHeaders }
     );
   }
@@ -47,5 +54,11 @@ export const config = {
   matcher: [
     "/api/booking/:path*",
     "/api/users/:path*",
+
+    "/api/booking/createBooking",
+    "/api/booking/getBooking",
+    "/api/booking/getBooking/:path*",
+    "/api/booking/accept/:path*",
+    "/api/booking/cancel/:path*",
   ],
 };
