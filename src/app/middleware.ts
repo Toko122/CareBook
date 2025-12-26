@@ -80,13 +80,3 @@ export function middleware(req: NextRequest) {
     );
   }
 }
-
-export const config = {
-  matcher: [
-    "/api/booking/:path*",
-    "/api/users/:path*",
-
-    "/api/booking/createBooking",
-    "/api/booking/getBooking",
-  ],
-};
