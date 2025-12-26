@@ -20,7 +20,17 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+  let authHeader: string | null = null;
+  
+  authHeader = req.headers.get("authorization");
+  
+  if (!authHeader) {
+    req.headers.forEach((value, key) => {
+      if (key.toLowerCase() === 'authorization' && !authHeader) {
+        authHeader = value;
+      }
+    });
+  }
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(

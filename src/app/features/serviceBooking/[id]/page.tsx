@@ -65,7 +65,11 @@ const ServiceBooking = () => {
          return;
        }
 
-      await axios.post('/booking/createBooking', form)
+      await axios.post('/booking/createBooking', form, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       setAlert({ type: 'success', message: 'Booking successful!' })
       setForm({ ...form, fullName: '', email: '', phone: '', date: '', time: '' })
 
