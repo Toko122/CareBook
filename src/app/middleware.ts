@@ -6,74 +6,35 @@ const SECRET_KEY = process.env.JWT as string;
 
 export function middleware(req: NextRequest) {
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
-
-  const pathname = req.nextUrl.pathname;
-
-  const whitelist = ["/api/auth/", "/api/contact", "/api/contact/getContacts"];
-
-  if (whitelist.some(path => pathname.startsWith(path))) {
-
-    if (req.method === "OPTIONS") {
-      return NextResponse.json({}, { headers: corsHeaders });
-    }
-    return NextResponse.next({ headers: corsHeaders });
-  }
 
   if (req.method === "OPTIONS") {
     return NextResponse.json({}, { headers: corsHeaders });
   }
 
+  if (req.nextUrl.pathname.startsWith("/api/auth/") || req.nextUrl.pathname.startsWith("/api/contact")) {
+    return NextResponse.next({ headers: corsHeaders });
+  }
+
   const authHeader = req.headers.get("authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return NextResponse.json(
-      { message: "Unauthorized - No token provided", pathname, method: req.method },
-      { status: 401, headers: corsHeaders }
-    );
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json({ message: "Unauthorized", method: req.method }, { status: 401, headers: corsHeaders });
   }
 
   const token = authHeader.split(" ")[1];
-
-  if (!token || token === "null" || token === "undefined") {
-    return NextResponse.json(
-      { message: "Unauthorized - Invalid token format" },
-      { status: 401, headers: corsHeaders }
-    );
-  }
-
-  if (!SECRET_KEY) {
-    console.error("JWT secret not configured in environment variables");
-    return NextResponse.json(
-      { message: "Server configuration error - JWT secret not configured" },
-      { status: 500, headers: corsHeaders }
-    );
-  }
-
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
-
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("userId", decoded.id);
 
-    const response = NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-
-    Object.entries(corsHeaders).forEach(([key, value]) => {
-      response.headers.set(key, value);
-    });
-
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    Object.entries(corsHeaders).forEach(([k,v]) => response.headers.set(k,v));
     return response;
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "Invalid token - Token expired or invalid", error: error.message },
-      { status: 401, headers: corsHeaders }
-    );
+  } catch (err:any) {
+    return NextResponse.json({ message: "Invalid token", error: err.message }, { status: 401, headers: corsHeaders });
   }
 }
 
@@ -81,8 +42,5 @@ export const config = {
   matcher: [
     "/api/booking/:path*",
     "/api/users/:path*",
-    "/api/contact",
-    "/api/contact/getContacts",
-    "/api/auth/:path*",
   ],
 };
