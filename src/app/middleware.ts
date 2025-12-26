@@ -5,6 +5,11 @@ import jwt from "jsonwebtoken";
 const SECRET_KEY = process.env.JWT as string;
 
 export function middleware(req: NextRequest) {
+
+  if (req.method === "OPTIONS") {
+    return NextResponse.next();
+  }
+
   const authHeader = req.headers.get("authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
