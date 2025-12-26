@@ -16,7 +16,8 @@ export function middleware(req: NextRequest) {
   }
 
   const pathname = req.nextUrl.pathname;
-  if (pathname.startsWith("/api/auth/")) {
+
+  if (pathname.startsWith("/api/auth/") || pathname === "/api/contact") {
     return NextResponse.next();
   }
 
@@ -80,3 +81,11 @@ export function middleware(req: NextRequest) {
     );
   }
 }
+
+export const config = {
+  matcher: [
+    "/api/booking/:path*",
+    "/api/users/:path*",
+    "/api/contact/getContacts",
+  ],
+};
