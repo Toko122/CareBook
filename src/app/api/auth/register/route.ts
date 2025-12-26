@@ -51,7 +51,13 @@ export async function POST(req: Request) {
             fullName, email, phone, password: hashedPassword
        })
 
-       return NextResponse.json({message: 'user created', user}, {status: 201})
+       return NextResponse.json({message: 'user created', user}, {status: 201, 
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+       })
 
       }catch(err){
        return NextResponse.json({message: 'error register user', err}, {status: 500}) 
