@@ -7,6 +7,16 @@ interface PasswordForm {
     password: string
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(req: Request, context: {params: Promise<{id: string}>}) {
      try{
         await connectDb()
@@ -18,7 +28,7 @@ export async function POST(req: Request, context: {params: Promise<{id: string}>
         if (!password || password.length < 6) {
          return NextResponse.json(
             { message: "Password must be at least 8 characters" },
-            { status: 400 }
+            { status: 400, headers: corsHeaders }
           );
         }
         const user = await User.findOne({
@@ -29,7 +39,7 @@ export async function POST(req: Request, context: {params: Promise<{id: string}>
          if (!user) {
          return NextResponse.json(
           { message: "Invalid or expired token" },
-          { status: 400 }
+          { status: 400, headers: corsHeaders }
         );
        }
 
@@ -41,10 +51,10 @@ export async function POST(req: Request, context: {params: Promise<{id: string}>
 
         return NextResponse.json(
             { message: 'Password reset successful' },
-            { status: 200 }
+            { status: 200, headers: corsHeaders }
         )
 
      }catch(err: any){
-         return NextResponse.json({message: "error reset password", error: err.message}, {status: 500})
+         return NextResponse.json({message: "error reset password", error: err.message}, {status: 500, headers: corsHeaders})
      }
 }

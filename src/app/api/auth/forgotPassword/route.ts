@@ -8,6 +8,16 @@ interface ForgotPasswordForm {
      email: string
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(req: Request) {
      try{ 
         await connectDb()
@@ -18,7 +28,7 @@ export async function POST(req: Request) {
           if (!user) {
            return NextResponse.json(
            { message: 'User with this email does not exist' },
-           { status: 404 }
+           { status: 404, headers: corsHeaders }
           )
         }
 
@@ -96,8 +106,8 @@ export async function POST(req: Request) {
 }
       await transporter.sendMail(mailOptions)
       
-      return NextResponse.json({message: 'email sent'}, {status: 200})
+      return NextResponse.json({message: 'email sent'}, {status: 200, headers: corsHeaders})
      }catch(err: any){
-        return NextResponse.json({message: 'error sending email for change password', error: err.message}, {status: 500})
+        return NextResponse.json({message: 'error sending email for change password', error: err.message}, {status: 500, headers: corsHeaders})
      }
 }

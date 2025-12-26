@@ -10,6 +10,16 @@ interface RegisterForm {
     phone: string
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(req: Request) {
       try{
         await connectDb()
@@ -19,7 +29,7 @@ export async function POST(req: Request) {
        if (!fullName || !email || !phone || !password) {
            return NextResponse.json(
             { message: "All fields are required" },
-            { status: 400 }
+            { status: 400, headers: corsHeaders }
           );
        }
 
@@ -30,7 +40,7 @@ export async function POST(req: Request) {
         if (existedUser) {
         return NextResponse.json(
           { message: "User already exists" },
-          { status: 409 }
+          { status: 409, headers: corsHeaders }
          );
        }
 
@@ -40,9 +50,9 @@ export async function POST(req: Request) {
             fullName, email, phone, password: hashedPassword
        })
 
-       return NextResponse.json({message: 'user created', user}, {status: 201})
+       return NextResponse.json({message: 'user created', user}, {status: 201, headers: corsHeaders})
 
       }catch(err){
-       return NextResponse.json({message: 'error register user', err}, {status: 500}) 
+       return NextResponse.json({message: 'error register user', err}, {status: 500, headers: corsHeaders}) 
       }
 }

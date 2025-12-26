@@ -5,9 +5,14 @@ import jwt from "jsonwebtoken";
 const SECRET_KEY = process.env.JWT as string;
 
 export function middleware(req: NextRequest) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
 
   if (req.method === "OPTIONS") {
-    return NextResponse.next();
+    return NextResponse.json({}, { headers: corsHeaders });
   }
 
   const authHeader = req.headers.get("authorization");
