@@ -26,10 +26,10 @@ export async function OPTIONS() {
 export async function POST(req: Request) {
      try{
 
-         const userId = req.headers.get("userId");
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized" }, { status: 401, headers: corsHeaders });
-        }
+      const userId = req.headers.get("x-user-id");
+      if (!userId) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
 
          await connectDb()
          const body: BookingForm = await req.json()

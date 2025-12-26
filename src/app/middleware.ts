@@ -28,11 +28,12 @@ export function middleware(req: NextRequest) {
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
     const requestHeaders = new Headers(req.headers);
-    requestHeaders.set("userId", decoded.id);
-
-    const response = NextResponse.next({ request: { headers: requestHeaders } });
-    Object.entries(corsHeaders).forEach(([k,v]) => response.headers.set(k,v));
-    return response;
+    requestHeaders.set("x-user-id", decoded.id)
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   } catch (err:any) {
     return NextResponse.json({ message: "Invalid token", error: err.message }, { status: 401, headers: corsHeaders });
   }
