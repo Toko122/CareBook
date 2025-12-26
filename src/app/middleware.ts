@@ -11,6 +11,16 @@ export function middleware(req: NextRequest) {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 
+  if (req.nextUrl.pathname.startsWith('/api/auth/')) {
+
+    if (req.method === "OPTIONS") {
+      return NextResponse.json({}, { headers: corsHeaders });
+    }
+    return NextResponse.next({
+      headers: corsHeaders,
+    });
+  }
+
   if (req.method === "OPTIONS") {
     return NextResponse.json({}, { headers: corsHeaders });
   }
@@ -20,7 +30,7 @@ export function middleware(req: NextRequest) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(
       { message: "Unauthorized" },
-      { status: 401 }
+      { status: 401, headers: corsHeaders }
     );
   }
 
@@ -34,11 +44,12 @@ export function middleware(req: NextRequest) {
       request: {
         headers: requestHeaders,
       },
+      headers: corsHeaders,
     });
   } catch {
     return NextResponse.json(
       { message: "Invalid token" },
-      { status: 401 }
+      { status: 401, headers: corsHeaders }
     );
   }
 }
