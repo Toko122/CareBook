@@ -15,6 +15,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.json({}, { headers: corsHeaders });
   }
 
+  const pathname = req.nextUrl.pathname;
+  if (pathname.startsWith("/api/auth/")) {
+    return NextResponse.next();
+  }
+
   const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -33,18 +38,34 @@ export function middleware(req: NextRequest) {
     );
   }
 
+  if (!SECRET_KEY) {
+    console.error("JWT environment variable is not set");
+    return NextResponse.json(
+      { message: "Server configuration error - JWT secret not configured" },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
-     const requestHeaders = new Headers(req.headers);
-     requestHeaders.set("userId", decoded.id);
-    return NextResponse.next({
+    
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("userId", decoded.id);
+    
+    const response = NextResponse.next({
       request: {
         headers: requestHeaders,
       },
     });
-  } catch (error) {
+    
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    
+    return response;
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Invalid token - Token expired or invalid" },
+      { message: "Invalid token - Token expired or invalid", error: error.message },
       { status: 401, headers: corsHeaders }
     );
   }
@@ -52,7 +73,7 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/booking/:path*",
-    "/api/users/:path*",
+    "/api/booking/(.*)",
+    "/api/users/(.*)",
   ],
 };
