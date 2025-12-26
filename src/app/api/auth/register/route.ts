@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
        return NextResponse.json({message: 'user created', user}, {status: 201, headers: corsHeaders})
 
-      }catch(err){
-       return NextResponse.json({message: 'error register user', err}, {status: 500, headers: corsHeaders}) 
+      }catch(err: any){
+       return NextResponse.json({message: 'error register user', error: err.message}, {status: 500, headers: corsHeaders}) 
       }
 }
