@@ -1,26 +1,50 @@
 import connectDb from "@/lib/connectDb";
 import Booking from "@/models/booking";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
+const SECRET_KEY = process.env.JWT as string;
 
 export async function GET(req: Request) {
-      try{
-        await connectDb()
-        const userId = req.headers.get("x-user-id");
-if (!userId) {
-  return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-}
-        const bookings = await Booking.find({userId}).sort({createdAt: -1})
+  try {
 
-        if (!bookings) {
-           return NextResponse.json(
-           { message: "Booking not found" },
-           { status: 404 }
-         );
-        }
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { message: "Unauthorized - No token provided" },
+        { status: 401 }
+      );
+    }
 
-        return NextResponse.json({bookings}, {status: 200})
+    const token = authHeader.split(" ")[1];
+    let userId: string;
 
-      }catch(err: any){
-         return NextResponse.json({message: 'error getting booking by id', error: err.message}, {status: 500})
-      }
+    try {
+      const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
+      userId = decoded.id;
+    } catch {
+      return NextResponse.json(
+        { message: "Unauthorized - Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    await connectDb();
+
+    const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
+
+    if (!bookings || bookings.length === 0) {
+      return NextResponse.json(
+        { message: "No bookings found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ bookings }, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { message: "Error getting bookings", error: err.message },
+      { status: 500 }
+    );
+  }
 }
