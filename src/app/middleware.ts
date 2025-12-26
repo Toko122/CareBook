@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return NextResponse.json(
-      { message: "Unauthorized - No token provided" },
+      { message: "Unauthorized - No token provided", pathname, method: req.method },
       { status: 401, headers: corsHeaders }
     );
   }
@@ -73,7 +73,10 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/booking/(.*)",
-    "/api/users/(.*)",
+    "/api/booking/:path*",
+    "/api/users/:path*",
+
+    "/api/booking/createBooking",
+    "/api/booking/getBooking",
   ],
 };
